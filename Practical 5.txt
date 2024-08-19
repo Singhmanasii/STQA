@@ -1,0 +1,108 @@
+java code-
+
+package org.example;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class Pract5_Practice {
+
+    public static void writeData(String filepath, String filename, String sheetName, String[] dataToWrite) throws IOException {
+        File file = new File(filepath + "\\" + filename);
+
+        // Check if the file exists, if not create it
+        if (!file.exists()) {
+            try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+                workbook.createSheet(sheetName);
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    workbook.write(fos);
+                }
+            }
+        }
+
+        try (FileInputStream fis = new FileInputStream(file);
+             XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+
+            XSSFSheet sheet = workbook.getSheet(sheetName);
+            int rowCount = sheet.getLastRowNum();
+
+            Row newRow = sheet.createRow(rowCount + 1);
+            for (int i = 0; i < dataToWrite.length; i++) {
+                newRow.createCell(i).setCellValue(dataToWrite[i]);
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                workbook.write(fos);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        String[][] data = {
+                {"Student1", "21"}, {"Student2", "22"}, {"Student3", "20"},
+                {"Student4", "21"}, {"Student5", "21"}, {"Student6", "23"},
+                {"Student7", "19"}, {"Student8", "22"}, {"Student9", "20"},
+                {"Student10", "19"}
+        };
+
+        String filepath = System.getProperty("user.dir") + "\\src\\main\\resources";
+        String filename = "Practical5.xlsx";
+        String sheetName = "Sheet1";
+
+        for (String[] rowData : data) {
+            writeData(filepath, filename, sheetName, rowData);
+        }
+    }
+}
+pom.xml code-
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>Pract5_Practice</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-examples</artifactId>
+            <version>5.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-lite</artifactId>
+            <version>5.2.3</version>
+        </dependency>
+    </dependencies>
+</project>
